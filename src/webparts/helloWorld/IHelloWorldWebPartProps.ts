@@ -1,4 +1,6 @@
-import {ISPList} from './HelloWorldWebPart';
+import {
+  IWebPartContext
+} from '@microsoft/sp-webpart-base';
 
 export interface IHelloWorldWebPartProps {
   description: string;
@@ -6,6 +8,5 @@ export interface IHelloWorldWebPartProps {
   test1: boolean;
   test2: string; 
   test3: boolean;
-  siteUrl: string; 
-  data: ISPList[];
+  context: IWebPartContext; 
 }

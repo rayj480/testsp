@@ -14,9 +14,6 @@ import {
 import * as strings from 'helloWorldStrings';
 import HelloWorld, { IHelloWorldProps } from './components/HelloWorld';
 import { IHelloWorldWebPartProps } from './IHelloWorldWebPartProps';
-import {Environment, EnvironmentType} from '@microsoft/sp-client-base';
-import MockHttpCLient from './MockHttpClient';
-import styles from './HelloWorld.module.scss';
 
 export interface ISPLists{
   value: ISPList[];
@@ -33,37 +30,7 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
     super(context);
   }
   
-  private _renderListAsync(): ISPList[]{
-    // local Environment
-    if(Environment.type === EnvironmentType.Local){
-      this._getMockListData().then((response) => {
-        return response.value;
-      });
-    }
-    else if(Environment.type === EnvironmentType.SharePoint ||
-            Environment.type === EnvironmentType.ClassicSharePoint){
 
-      this._getListData().then((response) => {
-        return response.value;
-      });
-   }
-   return [];
-  }
-
-  private _getMockListData(): Promise<ISPLists>{
-    return MockHttpCLient.get(this.context.pageContext.web.absoluteUrl)
-      .then((data: ISPList[]) => {
-        var listData: ISPLists = {value: data};
-        return listData;
-      }) as Promise<ISPLists>;
-  }
-
-  private _getListData(): Promise<ISPLists>{
-    return this.context.httpClient.get(this.context.pageContext.web.absoluteUrl + '/_api/web/lists?$filter=Hidden eq false')
-      .then((response: Response) => {
-        return response.json();
-      });
-  }
 
   public render(): void {
     const element: React.ReactElement<IHelloWorldProps> = React.createElement(HelloWorld, {
@@ -72,8 +39,7 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
       test1: this.properties.test1, 
       test2: this.properties.test2, 
       test3: this.properties.test3, 
-      siteUrl: this.context.pageContext.web.title,
-      data: this._renderListAsync()
+      context: this.context
     });
 
     ReactDom.render(element, this.domElement);
